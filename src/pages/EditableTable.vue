@@ -11,11 +11,23 @@
   </VmTable>
     
     <!-- 版权详情弹窗 -->
-    <Modal v-model="detailsModal" title="版权详情" width="600">
-      <div v-if="selectedCopyright">
-        <div class="copyright-image">
-          <img v-if="selectedCopyright.imgUrl" :src="'/api/uploads/' + selectedCopyright.imgUrl" style="max-width: 100%; max-height: 300px;" onerror="this.src=require('../assets/img/bg.jpg')" />
-          <img v-else :src="require('../assets/img/bg.jpg')" style="max-width: 100%; max-height: 300px;" />
+    <Modal v-model="detailsModal" title="版权详情" width="700">
+      <div v-if="selectedCopyright" class="details-container">
+        <div class="copyright-image-container">
+          <div class="image-wrapper">
+            <img v-if="selectedCopyright.imgUrl" 
+                 :src="'/api/uploads/' + selectedCopyright.imgUrl" 
+                 class="details-image"
+                 :class="{'zoomed': isImageZoomed}"
+                 @click="toggleImageZoom"
+                 onerror="this.src=require('../assets/img/bg.jpg')" />
+            <img v-else 
+                 :src="require('../assets/img/bg.jpg')" 
+                 class="details-image"
+                 @click="toggleImageZoom" />
+            <div class="zoom-hint" v-if="!isImageZoomed">点击图片放大</div>
+            <div class="zoom-hint" v-else>点击图片缩小</div>
+          </div>
         </div>
         <div class="copyright-info">
           <p><strong>标题：</strong> {{ selectedCopyright.title }}</p>
@@ -24,6 +36,7 @@
           <p><strong>状态：</strong> {{ selectedCopyright.status }}</p>
           <p><strong>拥有者地址：</strong> {{ selectedCopyright.ownerAddress }}</p>
           <p><strong>拥有者ID：</strong> {{ selectedCopyright.userId }}</p>
+          <p><strong>创建时间：</strong> {{ formatDate(selectedCopyright.createdTime) }}</p>
         </div>
       </div>
       <div slot="footer">
@@ -106,6 +119,20 @@
           this.$Message.error('驳回操作失败')
           console.error('Rejection failed:', error)
         })
+      },
+      toggleImageZoom() {
+        this.isImageZoomed = !this.isImageZoomed
+      },
+      formatDate(dateStr) {
+        if (!dateStr) return '未知';
+        const date = new Date(dateStr);
+        return date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
       }
     },
     data () {
@@ -137,7 +164,8 @@
         detailsModal: false,
         rejectModal: false,
         rejectReason: '',
-        copyrightToReject: null
+        copyrightToReject: null,
+        isImageZoomed: false
       }
     },
     mounted() {
@@ -151,11 +179,53 @@
 </script>
 
 <style scoped>
-.copyright-info p {
-  margin-bottom: 10px;
+.details-container {
+  display: flex;
+  flex-direction: column;
 }
-.copyright-image {
+
+.copyright-image-container {
+  width: 100%;
   text-align: center;
   margin-bottom: 20px;
+}
+
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.details-image {
+  max-width: 100%;
+  max-height: 350px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.details-image.zoomed {
+  transform: scale(1.8);
+  transform-origin: center;
+}
+
+.zoom-hint {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.copyright-info {
+  margin-top: 10px;
+}
+
+.copyright-info p {
+  margin-bottom: 10px;
+  line-height: 1.6;
 }
 </style>

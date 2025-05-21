@@ -37,6 +37,8 @@ public class UserService {
         newUser.setHash(username + "hash");
         // 设置删除标记为0（未删除）
         newUser.setDeleted(0);
+        // 设置积分默认值80
+        newUser.setCredit(80);
         // 设置创建时间和更新时间
         LocalDateTime now = LocalDateTime.now();
         newUser.setCreatedTime(now);
@@ -44,6 +46,29 @@ public class UserService {
 
         // 保存新用户到数据库
         return userRepository.save(newUser);
+    }
+
+    // 增加用户积分
+    public User increaseUserCredit(Long userId, int amount) {
+        User user = getUserById(userId);
+        if (user != null) {
+            user.setCredit(user.getCredit() + amount);
+            user.setUpdatedTime(LocalDateTime.now());
+            return userRepository.save(user);
+        }
+        return null;
+    }
+
+    // 检查用户积分是否满足交易条件（大于等于60）
+    public boolean isEligibleForTransaction(Long userId) {
+        User user = getUserById(userId);
+        return user != null && user.getCredit() >= 60;
+    }
+
+    // 获取用户积分
+    public int getUserCredit(Long userId) {
+        User user = getUserById(userId);
+        return user != null ? user.getCredit() : 0;
     }
 
     // 获取所有未删除的用户

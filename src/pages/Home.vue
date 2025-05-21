@@ -12,8 +12,8 @@
             <Icon type="arrow-down-b"></Icon>
         </Button> 
         <Dropdown-menu slot="list">
-            <Dropdown-item divided @click="logout"><i class="fa fa-key"></i>退出登录</Dropdown-item>
-            <Dropdown-item divided><i class="fa fa-cog"></i>用户信息</Dropdown-item>
+            <Dropdown-item @click.native="handleLogout"><i class="fa fa-key"></i>退出登录</Dropdown-item>
+            <Dropdown-item @click.native="handleUserInfo"><i class="fa fa-cog"></i>用户信息</Dropdown-item>
         </Dropdown-menu>
       </Dropdown>
     </Row>   
@@ -23,12 +23,6 @@
               <router-link to="/">
                 <i class="fa fa-dashboard"></i>
                 仪表盘  
-              </router-link>
-          </Menu-item> -->
-          <!-- <Menu-item name="Widget">
-              <router-link to="/widget">
-                <i class="fa fa-cogs"></i>
-                我的  
               </router-link>
           </Menu-item> -->
           <!-- <Menu-item name="Login">
@@ -67,6 +61,25 @@
                 我的数字藏品  
               </router-link>
           </Menu-item>
+          <Submenu name="Pages">
+              <template slot="title">
+                  <i class="fa fa-cogs"></i>
+                  设置
+              </template>
+              <Menu-item name="Widget">
+                <router-link to="/widget">
+                  我的信息 
+                </router-link>
+              </Menu-item>
+             
+          </Submenu>
+          <!-- <Menu-item name="Widget">
+              <router-link to="/widget">
+                <i class="fa fa-cogs"></i>
+                我的信息  
+              </router-link>
+          </Menu-item> -->
+
           <Menu-item name="EditableTable" v-if="isAdmin">
               <router-link to="/editable-table">
                 <i class="fa fa-id-card"></i>
@@ -176,9 +189,21 @@ export default {
     }
   },
   methods: {
+    handleLogout() {
+      this.$Modal.confirm({
+        title: '提示',
+        content: '确定要退出登录吗？',
+        onOk: () => {
+          this.logout();
+        }
+      });
+    },
     logout() {
       sessionStorage.removeItem('user')
       this.$router.push('/login')
+    },
+    handleUserInfo() {
+      this.$router.push('/widget')
     }
   },
   data () {

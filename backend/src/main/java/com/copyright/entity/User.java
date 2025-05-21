@@ -27,6 +27,9 @@ public class User {
     @Column(nullable = false)
     private int deleted;
 
+    @Column(nullable = false, columnDefinition = "int default 80")
+    private int credit = 80;
+
     @Column(name = "created_time", nullable = false)
     private LocalDateTime createdTime;
 

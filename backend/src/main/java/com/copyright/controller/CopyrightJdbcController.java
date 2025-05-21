@@ -75,7 +75,12 @@ public class CopyrightJdbcController {
      * 获取用户的版权信息，包含用户名
      */
     @GetMapping("/user/{address}/with-username")
-    public ResponseEntity<List<Map<String, Object>>> getUserCopyrightsWithUsername(@PathVariable String address) {
+    public ResponseEntity<List<Map<String, Object>>> getUserCopyrightsWithUsername(
+            @PathVariable String address,
+            @RequestParam(required = false) String status) {
+        if (status != null) {
+            return ResponseEntity.ok(copyrightJdbcService.getUserCopyrightsWithUsernameAndStatus(address, status));
+        }
         return ResponseEntity.ok(copyrightJdbcService.getUserCopyrightsWithUsername(address));
     }
 
@@ -91,7 +96,13 @@ public class CopyrightJdbcController {
      * 获取用户的版权信息 (通过用户ID)，包含用户名
      */
     @GetMapping("/user-id/{userId}/with-username")
-    public ResponseEntity<List<Map<String, Object>>> getUserCopyrightsByUserIdWithUsername(@PathVariable Long userId) {
+    public ResponseEntity<List<Map<String, Object>>> getUserCopyrightsByUserIdWithUsername(
+            @PathVariable Long userId,
+            @RequestParam(required = false) String status) {
+        if (status != null) {
+            return ResponseEntity
+                    .ok(copyrightJdbcService.getUserCopyrightsByUserIdWithUsernameAndStatus(userId, status));
+        }
         return ResponseEntity.ok(copyrightJdbcService.getUserCopyrightsByUserIdWithUsername(userId));
     }
 
