@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS copyrights (
   reason VARCHAR(255),
   created_time DATETIME NOT NULL,
   updated_time DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
 
 -- 创建举报表（如果不存在）
 CREATE TABLE IF NOT EXISTS reports (

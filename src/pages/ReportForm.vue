@@ -155,10 +155,10 @@ export default {
             let color = 'blue';
             let text = '待审核';
             if (params.row.status === 'APPROVED') {
-              color = 'success';
+              color = 'blue';
               text = '已通过';
             } else if (params.row.status === 'REJECTED') {
-              color = 'error';
+              color = 'blue';
               text = '已驳回';
             }
             return h('Tag', {

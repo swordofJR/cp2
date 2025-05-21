@@ -565,11 +565,11 @@
 
   .reported-section {
     margin-bottom: 20px;
-  }
+}
 
-  .section-space {
-    margin-top: 30px;
-  }
+.section-space {
+  margin-top: 30px;
+}
 
   .section-title {
     margin-bottom: 20px;
