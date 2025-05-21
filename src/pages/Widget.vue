@@ -21,6 +21,54 @@
       </Col>
     </Row>
 
+    <!-- 我被举报的记录 -->
+    <Row :gutter="16" class="reported-section">
+      <Col :span="24">
+        <Card title="我被举报的记录" class="vm-margin">
+          <div slot="extra">
+            <Button type="primary" size="small" icon="md-refresh" @click="loadMyReportedRecords">刷新</Button>
+          </div>
+          <Table :columns="reportedColumns" :data="reportedList" stripe :loading="reportedLoading" no-data-text="没有针对您的举报记录"></Table>
+        </Card>
+      </Col>
+    </Row>
+
+    <!-- 举报详情弹窗 -->
+    <Modal v-model="reportDetailDialog" title="举报详情" width="700">
+      <div v-if="selectedReport" class="report-detail">
+        <div class="detail-section">
+          <p><strong>举报ID:</strong> {{ selectedReport.id }}</p>
+          <p><strong>举报人:</strong> {{ selectedReport.reporterUsername }}</p>
+          <p><strong>版权名称:</strong> {{ selectedReport.copyrightTitle }} (ID: {{ selectedReport.copyrightId }})</p>
+          <p><strong>举报原因:</strong> {{ selectedReport.reason }}</p>
+          <p><strong>状态:</strong> 
+            <Tag v-if="selectedReport.status === 'PENDING'" color="blue">待审核</Tag>
+            <Tag v-else-if="selectedReport.status === 'APPROVED'" color="success">已通过</Tag>
+            <Tag v-else-if="selectedReport.status === 'REJECTED'" color="error">已驳回</Tag>
+          </p>
+          <p v-if="selectedReport.status === 'APPROVED'"><strong>处理结果:</strong> 被扣除20积分</p>
+          <p v-if="selectedReport.status === 'REJECTED'"><strong>驳回原因:</strong> {{ selectedReport.rejectReason }}</p>
+          <p><strong>提交时间:</strong> {{ formatDate(selectedReport.createdTime) }}</p>
+        </div>
+        
+        <div v-if="selectedReport.evidenceImg" class="evidence-image">
+          <h3>证据图片:</h3>
+          <div class="image-wrapper">
+            <img :src="'/api/uploads/evidence/' + selectedReport.evidenceImg" 
+                 class="details-image"
+                 :class="{'zoomed': isImageZoomed}"
+                 @click="toggleImageZoom"
+                 onerror="this.src=require('../assets/img/bg.jpg')" />
+            <div class="zoom-hint" v-if="!isImageZoomed">点击图片放大</div>
+            <div class="zoom-hint" v-else>点击图片缩小</div>
+          </div>
+        </div>
+      </div>
+      <div slot="footer">
+        <Button type="primary" @click="reportDetailDialog = false">关闭</Button>
+      </div>
+    </Modal>
+
     <!-- <Row class="vm-margin">
       <VmStateGroup :data="dataStateGroup">
       </VmStateGroup>
@@ -225,6 +273,73 @@
             photo: require('@/assets/img/photo.jpg'),
             name: 'JR'
           }
+        ],
+        reportedList: [],
+        reportedLoading: false,
+        reportDetailDialog: false,
+        selectedReport: null,
+        reportedColumns: [
+          {
+            title: 'ID',
+            key: 'id',
+            width: 80
+          },
+          {
+            title: '举报人',
+            key: 'reporterUsername',
+            width: 120
+          },
+          {
+            title: '版权名称',
+            key: 'copyrightTitle'
+          },
+          {
+            title: '状态',
+            key: 'status',
+            width: 100,
+            render: (h, params) => {
+              let color = 'blue';
+              let text = '待审核';
+              if (params.row.status === 'APPROVED') {
+                color = 'success';
+                text = '已通过';
+              } else if (params.row.status === 'REJECTED') {
+                color = 'error';
+                text = '已驳回';
+              }
+              return h('Tag', {
+                props: {
+                  color: color
+                }
+              }, text);
+            }
+          },
+          {
+            title: '提交时间',
+            key: 'createdTime',
+            width: 160,
+            render: (h, params) => {
+              return h('span', this.formatDate(params.row.createdTime));
+            }
+          },
+          {
+            title: '详情',
+            key: 'action',
+            width: 100,
+            render: (h, params) => {
+              return h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.viewReportDetail(params.row);
+                  }
+                }
+              }, '查看详情');
+            }
+          }
         ]
       }
     },
@@ -240,6 +355,7 @@
           }
           this.loadUserCopyrights()
           this.loadUserCredit() // 加载用户积分
+          this.loadMyReportedRecords() // 加载被举报记录
         } catch (e) {
           console.error('Failed to parse user info:', e)
         }
@@ -393,83 +509,138 @@
             detailUrl: '#'
           }
         })
+      },
+      viewReportDetail(report) {
+        this.selectedReport = report
+        this.reportDetailDialog = true
+      },
+      loadMyReportedRecords() {
+        if (!this.currentUser || !this.currentUser.id) {
+          return;
+        }
+        this.reportedLoading = true;
+        axios.get(`/api/reports/reported/${this.currentUser.id}`)
+          .then(response => {
+            this.reportedList = Array.isArray(response.data) ? response.data : [];
+            console.log('加载被举报记录成功，数量:', this.reportedList.length);
+          })
+          .catch(error => {
+            console.error('加载被举报记录失败:', error);
+            this.$Message.error('加载被举报记录失败');
+            this.reportedList = [];
+          })
+          .finally(() => {
+            this.reportedLoading = false;
+          });
       }
     }
   }
 </script>
 
 <style>
-.user-credit-section {
-  margin-bottom: 20px;
-}
-.credit-card {
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
-}
-.credit-info {
-  padding: 10px 0;
-}
-.credit-value {
-  font-size: 22px;
-  font-weight: bold;
-  color: #41b883;
-}
-.section-space {
-  margin-top: 30px;
-}
-.section-title {
-  margin: 20px 0;
-  padding-left: 10px;
-  border-left: 3px solid #41b883;
-}
+  .widget{
+    position: relative;
+  }
+  .vm-margin{
+    margin-bottom: 20px;
+  }
 
-/* 详情弹窗样式 */
-.details-container {
-  display: flex;
-  flex-direction: column;
-}
+  .user-credit-section {
+    margin-bottom: 20px;
+  }
 
-.copyright-image-container {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 20px;
-}
+  .credit-card {
+    width: 100%;
+  }
 
-.image-wrapper {
-  position: relative;
-  display: inline-block;
-}
+  .credit-info {
+    padding: 10px;
+  }
 
-.details-image {
-  max-width: 100%;
-  max-height: 350px;
-  transition: transform 0.3s ease;
-  cursor: pointer;
-}
+  .credit-value {
+    font-size: 20px;
+    color: #41b883;
+    font-weight: bold;
+  }
 
-.details-image.zoomed {
-  transform: scale(1.8);
-  transform-origin: center;
-}
+  .reported-section {
+    margin-bottom: 20px;
+  }
 
-.zoom-hint {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  opacity: 0.8;
-}
+  .section-space {
+    margin-top: 30px;
+  }
 
-.copyright-info {
-  margin-top: 10px;
-}
+  .section-title {
+    margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 3px solid #41b883;
+  }
 
-.copyright-info p {
-  margin-bottom: 10px;
-  line-height: 1.6;
-}
+  .details-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .copyright-image-container {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .copyright-info {
+    flex: 1;
+    min-width: 300px;
+    padding: 0 20px;
+  }
+
+  .image-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .details-image {
+    max-width: 100%;
+    max-height: 350px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .details-image.zoomed {
+    transform: scale(1.8);
+    transform-origin: center;
+  }
+
+  .zoom-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  .report-detail {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-section {
+    margin-bottom: 20px;
+  }
+
+  .detail-section p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .evidence-image {
+    margin-top: 10px;
+  }
 </style>

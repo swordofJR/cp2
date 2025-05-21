@@ -15,6 +15,8 @@ import LockScreen from '@/pages/LockScreen'
 import Loading from '@/pages/Loading'
 import AllCopyrights from '@/pages/AllCopyrights'
 import UserManagement from '@/pages/UserManagement'
+import ReportForm from '@/pages/ReportForm'
+import ReportManagement from '@/pages/ReportManagement'
 
 Vue.use(Router)
 
@@ -110,6 +112,28 @@ const router = new Router({
                     path: 'charts',
                     name: 'Charts',
                     component: Charts
+                },
+                {
+                    path: 'report-form',
+                    name: 'ReportForm',
+                    component: ReportForm,
+                    meta: {
+                        keepAlive: true,
+                        title: '举报信息',
+                        requiresAuth: true,
+                        role: 'user'
+                    }
+                },
+                {
+                    path: 'report-management',
+                    name: 'ReportManagement',
+                    component: ReportManagement,
+                    meta: {
+                        keepAlive: true,
+                        title: '举报管理',
+                        requiresAuth: true,
+                        role: 'admin'
+                    }
                 }
             ]
         },

@@ -61,6 +61,12 @@
                 我的数字藏品  
               </router-link>
           </Menu-item>
+          <Menu-item name="ReportForm" v-if="isUser && !isAdmin">
+              <router-link to="/report-form">
+                <i class="fa fa-flag"></i>
+                举报信息  
+              </router-link>
+          </Menu-item>
           <Submenu name="Pages">
               <template slot="title">
                   <i class="fa fa-cogs"></i>
@@ -84,6 +90,12 @@
               <router-link to="/editable-table">
                 <i class="fa fa-id-card"></i>
                 版权审核信息  
+              </router-link>
+          </Menu-item>
+          <Menu-item name="ReportManagement" v-if="isAdmin">
+              <router-link to="/report-management">
+                <i class="fa fa-flag"></i>
+                举报管理  
               </router-link>
           </Menu-item>
           <Menu-item name="AllCopyrights" v-if="isAdmin">
