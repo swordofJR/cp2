@@ -1,0 +1,12 @@
+<template>
+  <RegisterComponent />
+</template>
+<script>
+import RegisterComponent from '@/components/Register'
+export default {
+  name: 'RegisterPage',
+  components: {
+    RegisterComponent
+  }
+}
+</script> 
