@@ -22,6 +22,9 @@ public class Copyright {
     @Column(nullable = false)
     private String imgUrl;
 
+    @Column
+    private String ipfsHash;
+
     @Column(nullable = false)
     private String category;
 

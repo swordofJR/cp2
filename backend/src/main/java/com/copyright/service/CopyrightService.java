@@ -5,6 +5,8 @@ import com.copyright.repository.CopyrightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +21,13 @@ import java.util.UUID;
 @Service
 public class CopyrightService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CopyrightService.class);
+
     @Autowired
     private CopyrightRepository copyrightRepository;
+
+    @Autowired
+    private IpfsService ipfsService;
 
     private final String uploadDir = System.getProperty("user.dir") + "/uploads";
 
@@ -34,14 +41,25 @@ public class CopyrightService {
 
     public Copyright uploadCopyright(MultipartFile file, String title, String description, String category,
             String ownerAddress, Long userId) throws IOException {
-        // 保存文件
+        // 保存文件到本地
         String uniqueFileName = saveFile(file);
+
+        // 上传文件到IPFS（如果IPFS服务可用）
+        String ipfsHash = ipfsService.uploadFile(file);
+        logger.info("文件上传完成 - 本地路径: {}, IPFS哈希: {}", uniqueFileName,
+                ipfsHash.isEmpty() ? "未上传到IPFS" : ipfsHash);
 
         // 创建版权对象
         Copyright copyright = new Copyright();
         copyright.setTitle(title);
         copyright.setDescription(description);
         copyright.setImgUrl(uniqueFileName);
+
+        // 只有当IPFS哈希不为空时才设置
+        if (!ipfsHash.isEmpty()) {
+            copyright.setIpfsHash(ipfsHash);
+        }
+
         copyright.setCategory(category);
         copyright.setStatus("PENDING"); // 默认状态为待审核
         copyright.setOwnerAddress(ownerAddress);

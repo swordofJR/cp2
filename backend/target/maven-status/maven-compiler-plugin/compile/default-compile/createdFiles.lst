@@ -1,6 +1,7 @@
 com\copyright\config\WebConfig.class
 com\copyright\service\CopyrightJdbcService$CopyrightRowMapper.class
 com\copyright\controller\TestController.class
+com\copyright\service\IpfsService.class
 com\copyright\entity\Copyright.class
 com\copyright\entity\User.class
 com\copyright\service\UserService.class

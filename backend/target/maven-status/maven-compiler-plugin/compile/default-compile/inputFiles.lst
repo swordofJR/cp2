@@ -9,6 +9,7 @@ E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyri
 E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyright\controller\UserController.java
 E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyright\entity\UserRole.java
 E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyright\service\ReportService.java
+E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyright\service\IpfsService.java
 E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyright\repository\CopyrightRepository.java
 E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyright\controller\ReportController.java
 E:\newDevelop\copyright-master\copyright-master\backend\src\main\java\com\copyright\controller\CopyrightController.java

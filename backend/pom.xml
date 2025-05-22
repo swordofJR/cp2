@@ -18,6 +18,13 @@
         <java.version>8</java.version>
         <web3j.version>4.8.7</web3j.version>
     </properties>
+    
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Spring Boot -->
@@ -35,6 +42,13 @@
             <groupId>org.web3j</groupId>
             <artifactId>core</artifactId>
             <version>${web3j.version}</version>
+        </dependency>
+
+        <!-- IPFS -->
+        <dependency>
+            <groupId>com.github.ipfs</groupId>
+            <artifactId>java-ipfs-http-client</artifactId>
+            <version>v1.2.3</version>
         </dependency>
 
         <!-- MySQL -->

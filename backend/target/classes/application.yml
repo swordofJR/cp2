@@ -34,3 +34,8 @@ spring:
   web:
     resources:
       static-locations: file:uploads/
+
+# IPFS配置
+ipfs:
+  host: localhost
+  port: 5001
