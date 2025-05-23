@@ -18,7 +18,7 @@
           <p><strong>标题：</strong> {{ selectedCopyright.title }}</p>
           <p><strong>描述：</strong> {{ selectedCopyright.description }}</p>
           <p><strong>类别：</strong> {{ selectedCopyright.category }}</p>
-          <p><strong>状态：</strong> {{ selectedCopyright.status }}</p>
+          <p><strong>状态：</strong> {{ getStatusText(selectedCopyright.status) }}</p>
           <p><strong>拥有者地址：</strong> {{ selectedCopyright.ownerAddress }}</p>
           <p><strong>拥有者ID：</strong> {{ selectedCopyright.userId }}</p>
           <p><strong>拥有者：</strong> {{ selectedCopyright.username || '未知' }}</p>
@@ -61,7 +61,10 @@ export default {
           id: '3',
           title: '状态',
           key: 'status',
-          sortable: true
+          sortable: true,
+          render: (h, params) => {
+            return h('div', this.getStatusText(params.row.status))
+          }
         },
         {
           id: '4',
@@ -148,6 +151,16 @@ export default {
       if (!dateTimeStr) return '';
       const date = new Date(dateTimeStr);
       return date.toLocaleString();
+    },
+    getStatusText(status) {
+      const statusMap = {
+        'PENDING': '待审核',
+        'APPROVED': '审核通过',
+        'LISTED': '已发布',
+        'REJECTED': '被驳回',
+        'SOLD': '已出售'
+      }
+      return statusMap[status] || status
     },
     showDetails(copyright) {
       this.selectedCopyright = copyright

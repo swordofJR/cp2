@@ -6,17 +6,15 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-// import "@openzeppelin/contracts/utils/Counters.sol";
-
 contract CopyrightToken is ERC721URIStorage, Ownable {
-  // using Counters for Counters.Counter;
-  // Counters.Counter private _tokenIds;
   uint256 private _tokenIds;
 
   enum CopyrightStatus {
     Pending,
     Approved,
-    Rejected
+    Listed,
+    Rejected,
+    Sold
   }
 
   struct CopyrightInfo {
@@ -27,6 +25,7 @@ contract CopyrightToken is ERC721URIStorage, Ownable {
     uint256 registrationDate;
     CopyrightStatus status;
     string ipfsHash;
+    uint256 price;
   }
 
   mapping(uint256 => CopyrightInfo) private _copyrightInfo;
@@ -53,7 +52,6 @@ contract CopyrightToken is ERC721URIStorage, Ownable {
     string memory category,
     string memory ipfsHash
   ) public returns (uint256) {
-    // Validate input parameters
     require(bytes(title).length > 0, "Title cannot be empty");
     require(bytes(description).length > 0, "Description cannot be empty");
     require(bytes(imageUrl).length > 0, "Image URL cannot be empty");
@@ -73,7 +71,8 @@ contract CopyrightToken is ERC721URIStorage, Ownable {
       category: category,
       registrationDate: block.timestamp,
       status: CopyrightStatus.Pending,
-      ipfsHash: ipfsHash
+      ipfsHash: ipfsHash,
+      price: 0.01 ether
     });
 
     _userCopyrights[msg.sender].push(newTokenId);
@@ -132,7 +131,6 @@ contract CopyrightToken is ERC721URIStorage, Ownable {
   ) public virtual override(ERC721, IERC721) {
     super.transferFrom(from, to, tokenId);
 
-    // Update user copyrights tracking
     uint256[] storage fromList = _userCopyrights[from];
     for (uint256 i = 0; i < fromList.length; i++) {
       if (fromList[i] == tokenId) {
@@ -152,7 +150,6 @@ contract CopyrightToken is ERC721URIStorage, Ownable {
   ) public virtual override(ERC721, IERC721) {
     super.safeTransferFrom(from, to, tokenId, data);
 
-    // Update user copyrights tracking
     uint256[] storage fromList = _userCopyrights[from];
     for (uint256 i = 0; i < fromList.length; i++) {
       if (fromList[i] == tokenId) {

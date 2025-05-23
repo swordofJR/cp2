@@ -60,7 +60,7 @@
         </div>
         <div class="modal-item">
           <span class="label">状态：</span>
-          <span class="value status-available">{{ status || '可交易' }}</span>
+          <span class="value status-available">{{ getStatusText(status) }}</span>
         </div>
       </div>
     </Modal>
@@ -161,6 +161,16 @@
         // Implement the logic to handle image loading failure
         // For example, you can set a default image
         this.img = require('@/assets/img/img-1.jpg');
+      },
+      getStatusText(status) {
+        const statusMap = {
+          'PENDING': '待审核',
+          'APPROVED': '审核通过',
+          'LISTED': '已发布',
+          'REJECTED': '被驳回',
+          'SOLD': '已出售'
+        }
+        return statusMap[status] || status
       }
     }
   }

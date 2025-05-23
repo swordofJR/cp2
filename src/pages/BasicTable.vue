@@ -72,7 +72,10 @@
             id: '2.140712',
             title: '状态',
             key: 'status',
-            sortable: true
+            sortable: true,
+            render: (h, params) => {
+              return h('div', this.getStatusText(params.row.status))
+            }
           },
           {
             id: '2.140713',
@@ -324,6 +327,16 @@
       refreshData() {
         console.log('刷新用户版权信息数据...')
         this.loadUserCopyrights()
+      },
+      getStatusText(status) {
+        const statusMap = {
+          'PENDING': '待审核',
+          'APPROVED': '审核通过',
+          'LISTED': '已发布',
+          'REJECTED': '被驳回',
+          'SOLD': '已出售'
+        }
+        return statusMap[status] || status
       }
     }
   }

@@ -33,7 +33,7 @@
           </Menu-item> -->
           <Menu-item name="Panels" v-if="isUser && !isAdmin">
               <router-link to="/panels">
-                <i class="fa fa-database"></i>
+                <i class="fa fa-cloud-upload"></i>
                 上传版权信息
               </router-link>
           </Menu-item>
@@ -45,7 +45,7 @@
           </Menu-item> -->
           <Menu-item name="ImageList" v-if="canAccessMarket">
               <router-link to="/imagelist">
-                <i class="fa fa-shopping-bag"></i>
+                <i class="fa fa-cart-plus"></i>
                 数字藏品交易市场  
               </router-link>
           </Menu-item>
@@ -57,7 +57,7 @@
           </Menu-item> -->
           <Menu-item name="BasicTable" v-if="isUser && !isAdmin">
               <router-link to="/basic-table">
-                <i class="fa fa-id-card"></i>
+                <i class="fa fa-database"></i>
                 我的数字藏品  
               </router-link>
           </Menu-item>
@@ -67,7 +67,13 @@
                 举报信息  
               </router-link>
           </Menu-item>
-          <Submenu name="Pages">
+          <Menu-item name="Widget" v-if="isUser && !isAdmin">
+              <router-link to="/widget">
+                <i class="fa fa-cogs"></i>
+                我的信息  
+              </router-link>
+          </Menu-item>
+          <!-- <Submenu name="Pages">
               <template slot="title">
                   <i class="fa fa-cogs"></i>
                   设置
@@ -76,7 +82,7 @@
                 <router-link to="/widget">
                   我的信息 
                 </router-link>
-              </Menu-item>
+              </Menu-item> -->
              
           </Submenu>
           <!-- <Menu-item name="Widget">
